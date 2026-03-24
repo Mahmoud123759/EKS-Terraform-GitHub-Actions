@@ -32,8 +32,21 @@ desired_capacity_spot      = "1"
 min_capacity_spot          = "1"
 max_capacity_spot          = "10"
 addons = [
-  { name = "vpc-cni" },
-  { name = "coredns" },
-  { name = "kube-proxy" },
-  { name = "aws-ebs-csi-driver" }
+  {
+    name    = "vpc-cni",
+    version = "v1.20.0-eksbuild.1"
+  },
+  {
+    name    = "coredns"
+    version = "v1.12.2-eksbuild.4"
+  },
+  {
+    name    = "kube-proxy"
+    version = "v1.33.0-eksbuild.2"
+  },
+  {
+    name    = "aws-ebs-csi-driver"
+    version = "v1.46.0-eksbuild.1"
+  }
+  # Add more addons as needed
 ]
