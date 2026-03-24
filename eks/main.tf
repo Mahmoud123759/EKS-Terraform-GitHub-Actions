@@ -10,23 +10,6 @@ data "aws_availability_zones" "az" {
   }
 }
 
-resource "aws_eks_access_entry" "root_access_entry" {
-  cluster_name  = module.eks.cluster-name
-  principal_arn = "arn:aws:iam::983470701667:root"
-  type          = "STANDARD"
-}
-
-resource "aws_eks_access_policy_association" "policy_access_entry" {
-  cluster_name  = module.eks.cluster-name
-  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
-  principal_arn = "arn:aws:iam::983470701667:root"
-
-  access_scope {
-    type = "cluster"
-  }
-}
-
-
 
 module "eks" {
   source = "../module"
