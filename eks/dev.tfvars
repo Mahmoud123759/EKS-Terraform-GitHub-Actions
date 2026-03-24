@@ -36,4 +36,5 @@ addons = [
   { name = "coredns" },
   { name = "kube-proxy" },
   { name = "aws-ebs-csi-driver" }
+]
 
