@@ -2,6 +2,31 @@ locals {
   org = "ap-medium"
   env = var.env
 }
+data "aws_availability_zones" "az" {
+  # Exclude local zones
+  filter {
+    name   = "opt-in-status"
+    values = ["opt-in-not-required"]
+  }
+}
+
+resource "aws_eks_access_entry" "root_access_entry" {
+  cluster_name  = module.eks.cluster-name
+  principal_arn = "arn:aws:iam::983470701667:root"
+  type          = "STANDARD"
+}
+
+resource "aws_eks_access_policy_association" "policy_access_entry" {
+  cluster_name  = module.eks.cluster-name
+  policy_arn    = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSAdminPolicy"
+  principal_arn = "arn:aws:iam::983470701667:root"
+
+  access_scope {
+    type = "cluster"
+  }
+}
+
+
 
 module "eks" {
   source = "../module"
