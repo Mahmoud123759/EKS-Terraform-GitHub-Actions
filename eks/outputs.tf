@@ -1,10 +1,10 @@
 output "cluster_name" {
-  value = aws_eks_cluster.eks.name
+  value = module.eks.cluster-name
 }
 
 output "cluster_endpoint" {
-  value = aws_eks_cluster.eks.endpoint
+  value = module.eks.endpoint
 }
 output "cluster_arn" {
-  value = aws_eks_cluster.eks.arn
+  value = module.eks.arn
 }
