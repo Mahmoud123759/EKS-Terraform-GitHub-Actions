@@ -61,13 +61,34 @@ resource "aws_iam_role_policy_attachment" "eks-AmazonEC2ContainerRegistryReadOnl
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.eks-nodegroup-role[count.index].name
 }
+#ebs csi driver
+data "aws_iam_policy_document" "ebs_csi_assume_role" {
+  statement {
+    actions = ["sts:AssumeRoleWithWebIdentity"]
 
-resource "aws_iam_role_policy_attachment" "eks-AmazonEBSCSIDriverPolicy" {
-  count      = var.is_eks_nodegroup_role_enabled ? 1 : 0
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
-  role       = aws_iam_role.eks-nodegroup-role[count.index].name
+    principals {
+      type        = "Federated"
+      identifiers = [aws_iam_openid_connect_provider.eks-oidc.arn]
+    }
+
+    condition {
+      test     = "StringEquals"
+      variable = "${replace(aws_iam_openid_connect_provider.eks-oidc.url, "https://", "")}:sub"
+      values   = ["system:serviceaccount:kube-system:ebs-csi-controller-sa"]
+    }
+  }
 }
+# csi resource 
+resource "aws_iam_role" "ebs_csi_role" {
+  name = "${local.cluster_name}-ebs-csi-role"
 
+  assume_role_policy = data.aws_iam_policy_document.ebs_csi_assume_role.json
+}
+# policy ebs csi
+resource "aws_iam_role_policy_attachment" "ebs_csi_policy" {
+  role       = aws_iam_role.ebs_csi_role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AmazonEBSCSIDriverPolicy"
+}
 # OIDC
 resource "aws_iam_role" "eks_oidc" {
   assume_role_policy = data.aws_iam_policy_document.eks_oidc_assume_role_policy.json
